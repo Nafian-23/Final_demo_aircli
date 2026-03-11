@@ -11,7 +11,9 @@ namespace storage {
         const vector<string> candidates = {
             "storage/data/" + filename,
             "../storage/data/" + filename,
-            "data/" + filename
+            "data/" + filename,
+            "code/storage/data/" + filename,
+            "../code/storage/data/" + filename
         };
 
         for (const auto &path : candidates) {
@@ -20,7 +22,7 @@ namespace storage {
             }
         }
 
-        // Default to storage/data to ensure writes go to project data folder
+        // Default to repo-root storage/data to keep reads/writes consistent.
         return "storage/data/" + filename;
     }
 

@@ -1,0 +1,30 @@
+BG1773219573|0|knife|2.00|0.00
+BG1773225329|0|drug|15.00|0.00
+BG1773225329|1|knife|3.00|0.00
+BG1773225329|1|laptop|5.00|0.00
+BG1773225329|1|mobile|5.00|0.00
+BG1773248081|0|shirt|cloth|10.00
+BG1773248081|0|pant|cloth|10.00
+BG1773248081|0|book|book|5.00
+BG1773248081|0|laptop|electronics|15.00
+BG1773248081|1|gold|material|10.00
+BG1773248257|0|shirt|cloth|1.00
+BG1773248257|0|laptop|electronic|1.00
+BG1773248257|0|pant|cloth|1.00
+BG1773248257|1|gold|material|1.00
+BG1773249378|0|laptop|electronics|100.00
+BG1773249378|0|liquid|liquid|100.00
+BG1773251204|0|laptop|electronics|50.00
+BG1773251204|0|mobile|electronic|50.00
+BG1773251204|1|knife|material|50.00
+BG1773253128|0|Laptop|Electronics|5.00
+BG1773253128|0|Shampoo|Liquid|1.50
+BG1773253128|1|Knife|Knife|1.00
+BG1773253128|1|liquid|liquid|5.00
+BG1773253983|0|Laptop|Electronic|5.00
+BG1773253983|0|Shampoo|Liquid|1.50
+BG1773253983|1|knife|knife|1.00
+BG1773256005|0|Laptop|Electronics|5.00
+BG1773256005|0|Phone|Electronics|1.00
+BG1773256005|1|Small Knife |Sharp Objects|1.00
+BG1773256005|1|Scissors|Sharp Objects|0.50

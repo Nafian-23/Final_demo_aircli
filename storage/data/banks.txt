@@ -1,0 +1,5 @@
+B001|Prime Bank
+B002|City Bank
+B003|Dutch-Bangla Bank
+B004|BRAC Bank
+B005|Islami Bank

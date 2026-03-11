@@ -53,6 +53,13 @@ namespace users {
 
         // Update bank link (bank user id)
         bool updateLinkedBankUserId(const string &id, const string &bankUserId);
+
+        // Update realistic bank link (bank + account)
+        bool updateLinkedBankAccount(const string &id, const string &bankId, const string &accountNumber);
+        bool clearLinkedBankAccount(const string &id);
+
+        // Credit cash only when bank withdrawal is verified
+        bool creditCashForLinkedBankAccount(const string &bankId, const string &accountNumber, long long amountCents);
     };
 }
 

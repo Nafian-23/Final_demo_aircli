@@ -7,10 +7,12 @@ using namespace std;
 namespace users {
     string User::serialize() const {
 
-        // Format: id|name|username|password|role|cashBalance|phone|linkedBankUserId
+        // Format:
+        // id|name|username|password|role|cashBalance|phone|linkedBankUserId|linkedBankBankId|linkedBankAccountNumber
         return id + "|" + name + "|" + username + "|" + password + 
                "|" + to_string(static_cast<int>(role)) + "|" + to_string(cashBalance) +
-               "|" + phoneNumber + "|" + linkedBankUserId;
+               "|" + phoneNumber + "|" + linkedBankUserId +
+               "|" + linkedBankBankId + "|" + linkedBankAccountNumber;
     }
 
     User User::deserialize(const string &line) {
@@ -30,6 +32,8 @@ namespace users {
         string cashStr = parts.size() > 5 ? parts[5] : "0";
         string phone = parts.size() > 6 ? parts[6] : "";
         string linkedBankUserId = parts.size() > 7 ? parts[7] : "";
+        string linkedBankBankId = parts.size() > 8 ? parts[8] : "";
+        string linkedBankAccountNumber = parts.size() > 9 ? parts[9] : "";
 
         int roleValue = 0;
         try {
@@ -49,6 +53,7 @@ namespace users {
         user.setCashBalance(cashBalance);
         user.setPhoneNumber(phone);
         user.setLinkedBankUserId(linkedBankUserId);
+        user.setLinkedBankAccount(linkedBankBankId, linkedBankAccountNumber);
         return user;
     }
 }

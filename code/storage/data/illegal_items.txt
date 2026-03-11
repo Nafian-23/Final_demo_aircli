@@ -1,0 +1,8 @@
+gun
+knife
+explosive
+bomb
+drug
+cocaine
+heroin
+ammo

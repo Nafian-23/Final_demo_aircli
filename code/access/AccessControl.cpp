@@ -32,6 +32,8 @@ namespace access {
                 return "Senior Security";
             case Role::Admin:
                 return "Administrator";
+            case Role::BaggageHandler:
+                return "Baggage Handler";
             default:
                 return "Unknown";
         }

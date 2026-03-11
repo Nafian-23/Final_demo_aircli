@@ -1,7 +1,7 @@
 #ifndef USERS_USER_H
 #define USERS_USER_H
 
-#include "Role.h"
+#include "../Role.h"
 
 #include <string>
 
@@ -18,7 +18,11 @@ namespace users {
         Role role;
         long long cashBalance; // Cash at hand from bank withdrawals
         string phoneNumber;
+        // Legacy field from older version (kept for backward-compatible deserialization).
         string linkedBankUserId;
+        // New realistic linkage: bank + account number.
+        string linkedBankBankId;
+        string linkedBankAccountNumber;
 
     public:
 
@@ -47,6 +51,17 @@ namespace users {
 
         const string &getLinkedBankUserId() const { return linkedBankUserId; }
         void setLinkedBankUserId(const string &bankUserId) { linkedBankUserId = bankUserId; }
+
+        const string &getLinkedBankBankId() const { return linkedBankBankId; }
+        const string &getLinkedBankAccountNumber() const { return linkedBankAccountNumber; }
+        void setLinkedBankAccount(const string &bankId, const string &accountNumber) {
+            linkedBankBankId = bankId;
+            linkedBankAccountNumber = accountNumber;
+        }
+        void clearLinkedBankAccount() {
+            linkedBankBankId.clear();
+            linkedBankAccountNumber.clear();
+        }
 
         // Update user role
         void setRole(Role newRole) { role = newRole; }

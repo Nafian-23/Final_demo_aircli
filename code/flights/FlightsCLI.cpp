@@ -1,7 +1,7 @@
 #include "FlightsCLI.h"
 #include "../access/AccessControl.h"
 #include <iostream>
-#include <iomanip>
+#include "../banking/BankDirectory.h"
 
 namespace flights {
     void FlightsCLI::run(const string &currentUserId, Role currentRole) {
@@ -36,10 +36,32 @@ namespace flights {
                 cout << "Flight ID to book: "; cin >> fid;
                 const Flight* flight = manager.get(fid);
                 if (!flight) { cout << "Flight not found.\n"; return; }
+
+                cout << "\n--- Payment ---\n";
+                cout << "Bank account no: ";
+                string accountNo;
+                cin >> accountNo;
+                cout << "Enter PIN: ";
+                string pin;
+                cin >> pin;
+
+                const long long priceCents = 45000LL * 100LL;
+                Result pay = banking::BankDirectory::debitByAccountAndPin(
+                    accountNo,
+                    pin,
+                    priceCents,
+                    "Flight booking " + fid
+                );
+                if (!pay.ok) {
+                    cout << "\n❌ Payment failed: " << pay.message << "\n";
+                    return;
+                }
+
                 bool ok = manager.bookSeat(fid);
                 if (ok) {
                     auto ticketId = ticketManager.issueTicket(currentUserId, *flight);
-                    cout << "Booked! Ticket ID: " << ticketId << "\n";
+                    cout << "\n✅ Payment successful (bank debited).\n";
+                    cout << "🎟 Ticket ID: " << ticketId << "\n";
                 } else {
                     cout << "Booking failed.\n";
                 }
@@ -66,6 +88,7 @@ namespace flights {
         (void)currentRole;
         manager.load();
         ticketManager.load();
+        userManager.load();
         
         cout << "\n======= Flight Search =======\n";
         cout << "1. Search by Route & Date\n";
@@ -137,6 +160,26 @@ namespace flights {
             cout << "\nBooking cancelled.\n";
             return;
         }
+
+        cout << "\n--- Payment ---\n";
+        cout << "Bank account no: ";
+        string accountNo;
+        cin >> accountNo;
+        cout << "Enter PIN: ";
+        string pin;
+        cin >> pin;
+
+        const long long priceCents = 45000LL * 100LL;
+        Result pr = banking::BankDirectory::debitByAccountAndPin(
+            accountNo,
+            pin,
+            priceCents,
+            "Flight booking " + selectedFlight.getId()
+        );
+        if (!pr.ok) {
+            cout << "\n❌ Payment failed: " << pr.message << "\n";
+            return;
+        }
         
         bool booked = manager.bookSeat(selectedFlight.getId());
         if (!booked) {
@@ -145,7 +188,7 @@ namespace flights {
         }
         
         auto ticketId = ticketManager.issueTicket(currentUserId, selectedFlight);
-        cout << "\n✅ Payment successful.\n";
+        cout << "\n✅ Payment successful (bank debited).\n";
         cout << "🎟 Ticket ID: " << ticketId << "\n";
     }
 }

@@ -113,4 +113,29 @@ namespace users {
         it->second.setLinkedBankUserId(bankUserId);
         return save();
     }
+
+    bool UserManager::updateLinkedBankAccount(const string &id, const string &bankId, const string &accountNumber) {
+        auto it = usersById.find(id);
+        if (it == usersById.end()) return false;
+        it->second.setLinkedBankAccount(bankId, accountNumber);
+        return save();
+    }
+
+    bool UserManager::clearLinkedBankAccount(const string &id) {
+        auto it = usersById.find(id);
+        if (it == usersById.end()) return false;
+        it->second.clearLinkedBankAccount();
+        return save();
+    }
+
+    bool UserManager::creditCashForLinkedBankAccount(const string &bankId, const string &accountNumber, long long amountCents) {
+        for (auto &p : usersById) {
+            if (p.second.getLinkedBankBankId() == bankId &&
+                p.second.getLinkedBankAccountNumber() == accountNumber) {
+                p.second.addCash(amountCents);
+                return save();
+            }
+        }
+        return false;
+    }
 }

@@ -1,9 +1,8 @@
 #include "UserCLI.h"
 #include <iostream>
-#include <sstream>
 #include <termios.h>
 #include <unistd.h>
-#include "../storage/DataStorage.h"
+#include "../banking/BankDirectory.h"
 
 using namespace std;
 
@@ -110,23 +109,6 @@ namespace users {
         return true;
     }
 
-    static string findBankUserIdByPhone(const string &phone) {
-        auto lines = storage::DataStorage::readAll("bank_users.txt");
-        for (const auto &line : lines) {
-            if (line.empty()) continue;
-            stringstream ss(line);
-            string id, name, phoneVal, pin;
-            getline(ss, id, '|');
-            getline(ss, name, '|');
-            getline(ss, phoneVal, '|');
-            getline(ss, pin, '|');
-            if (phoneVal == phone) {
-                return id;
-            }
-        }
-        return "";
-    }
-
     bool UserCLI::linkBankAccount(const string &userId) {
         manager.load();
         const User* user = manager.get(userId);
@@ -135,12 +117,12 @@ namespace users {
             return false;
         }
 
-        if (!user->getLinkedBankUserId().empty()) {
+        if (!user->getLinkedBankAccountNumber().empty()) {
             cout << "\nBank account already added. Want to unlink? (y/n): ";
             char choice = 'n';
             cin >> choice;
             if (choice == 'y' || choice == 'Y') {
-                manager.updateLinkedBankUserId(userId, "");
+                manager.clearLinkedBankAccount(userId);
                 cout << "\nBank account unlinked.\n";
                 return false;
             }
@@ -151,10 +133,37 @@ namespace users {
         }
 
         cout << "\n--- Link Bank Account ---\n";
-        cout << "Enter phone number: ";
-        string phone;
+        auto banks = banking::BankDirectory::listBanks();
+        if (banks.empty()) {
+            cout << "\nNo banks available.\n";
+            return false;
+        }
+
+        cout << "\nSelect a bank:\n";
+        for (size_t i = 0; i < banks.size(); i++) {
+            cout << "  " << (i + 1) << ") " << banks[i].name << " (" << banks[i].id << ")\n";
+        }
+        cout << "Choice: ";
+        int bankChoice = 0;
+        cin >> bankChoice;
+        if (bankChoice < 1 || bankChoice > (int)banks.size()) {
+            cout << "\nInvalid bank choice.\n";
+            return false;
+        }
+        const string bankId = banks[(size_t)bankChoice - 1].id;
+
+        cout << "Account number: ";
+        string accountNumber;
         cin.ignore();
+        getline(cin, accountNumber);
+
+        cout << "Bank account phone: ";
+        string phone;
         getline(cin, phone);
+
+        cout << "Bank PIN: ";
+        cout.flush();
+        string pin = readMaskedPassword();
 
         if (!user->getPhoneNumber().empty() && user->getPhoneNumber() != phone) {
             cout << "\nPhone number does not match your airCLI profile.\n";
@@ -166,18 +175,20 @@ namespace users {
             manager.updatePhoneNumber(userId, phone);
         }
 
-        string bankUserId = findBankUserIdByPhone(phone);
-        if (bankUserId.empty()) {
-            cout << "\nNo bank account found for this phone.\n";
-            cout << "Please register in Banking CLI first.\n";
-            cout << "Open Banking CLI now? (y/n): ";
+        banking::VerifiedBankAccount verified;
+        Result vr = banking::BankDirectory::verifyAccountCredentials(
+            bankId, accountNumber, phone, pin, verified
+        );
+        if (!vr.ok) {
+            cout << "\n" << vr.message << "\n";
+            cout << "Open Banking CLI now to create/verify account? (y/n): ";
             char openChoice = 'n';
             cin >> openChoice;
             return (openChoice == 'y' || openChoice == 'Y');
         }
 
-        manager.updateLinkedBankUserId(userId, bankUserId);
-        cout << "\n✓ Bank account linked successfully.\n";
+        manager.updateLinkedBankAccount(userId, bankId, accountNumber);
+        cout << "\n✓ Bank account linked successfully (" << verified.bankName << ").\n";
         cout << "Open Banking CLI now? (y/n): ";
         char openChoice = 'n';
         cin >> openChoice;
